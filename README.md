@@ -41,7 +41,8 @@ $(window).load(function(){
         },
         onImageReady:function(img) {
         	// this callback gets executed anytime an image is converted
-        }
+        },
+        hoverEventProxy : null // an alternative element for the hover events to be assigned to
     });
 });
 </pre>
