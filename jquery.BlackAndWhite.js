@@ -23,7 +23,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHTddf
  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -41,7 +41,8 @@
 					invertHoverEffect: false,
 					speed: 500,
 					onImageReady: null,
-					intensity: 1
+					intensity: 1,
+					hoverEventProxy: null
 				};
 			options = $.extend(defaults, options);
 
@@ -53,12 +54,14 @@
 			var hoverEffect = options.hoverEffect,
 				webworkerPath = options.webworkerPath,
 				invertHoverEffect = options.invertHoverEffect,
+				hoverEventProxy = options.hoverEventProxy,
 				responsive = options.responsive,
 				intensity = (typeof options.intensity === 'number' && options.intensity < 1 && options.intensity > 0) ? options.intensity : 1,
 				fadeSpeedIn = $.isPlainObject(options.speed) ? options.speed.fadeIn : options.speed,
 				fadeSpeedOut = $.isPlainObject(options.speed) ? options.speed.fadeOut : options.speed;
 
-			var isIE7 = (document.all && !window.opera && window.XMLHttpRequest) ? true : false;
+			var isMSIE=/*@cc_on!@*/false; // http://dean.edwards.name/weblog/2007/03/sniff/
+			var IEpre9=(isMSIE&&((typeof document.documentMode=='undefined')||document.documentMode<9));
 
 			/*
 			 *
@@ -241,9 +244,9 @@
 				}
 				// binding the hover effect
 				if (hoverEffect) {
-
-					$container.on('mouseleave', _onMouseLeave);
-					$container.on('mouseenter', _onMouseEnter);
+					var el=hoverEventProxy?(hoverEventProxy.jquery?hoverEventProxy:$(hoverEventProxy)):$container;
+					el.on('mouseleave', _onMouseLeave);
+					el.on('mouseenter', _onMouseEnter);
 				}
 				// make it responsive
 				if (responsive) {
@@ -255,8 +258,8 @@
 
 				$container.each(function(index, currImageWrapper) {
 					var pic = $(currImageWrapper).find('img:not(.BWFilter)'),
-						currWidth = isIE7 ? $(pic).prop('width') : $(pic).width(),
-						currHeight = isIE7 ? $(pic).prop('height') : $(pic).height();
+						currWidth = IEpre9 ? $(pic).prop('width') : $(pic).width(),
+						currHeight = IEpre9 ? $(pic).prop('height') : $(pic).height();
 
 					$(this).find('.BWFilter, canvas').css({
 						width: currWidth,
